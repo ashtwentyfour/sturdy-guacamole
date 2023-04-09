@@ -1,0 +1,1 @@
+INSERT INTO census (id, tract_id, state, county, population, populationmen, year) VALUES (1, 1001020100, 'NY', 'Westchester', 200000, 120000, 2012);
