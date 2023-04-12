@@ -1,9 +1,7 @@
 package com.ashcorp.censusdataoperations.web;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,14 +14,21 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class HttpRequestTest {
+public class ControllerIntegrationTest {
 
-	@Autowired
-	private MockMvc mockMvc;
+    /**
+	* Declare MockMvc object.
+	*/
+    @Autowired
+    private MockMvc mockMvc;
 
-	@Test
-	public void shouldReturnSeedData() throws Exception {
-		this.mockMvc.perform(get("/data/census/1001020100")).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.state").value("NY"));
-	}
+    /**
+    * Request should return the seed data record.
+	*/
+    @Test
+    public void shouldReturnSeedData() throws Exception {
+        this.mockMvc.perform(get("/data/census/1001020100"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("NY"));
+    }
 }

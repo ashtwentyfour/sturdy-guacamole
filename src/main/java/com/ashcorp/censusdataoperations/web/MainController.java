@@ -12,58 +12,91 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-
-@Controller 
-@RequestMapping(path="/data/census") // path
+@Controller
+@RequestMapping(path = "/data/census") // path
 public class MainController {
+  /**
+  * CensusRepository object.
+  */
   @Autowired
   private CensusRepository censusRepository;
 
+  /**
+  * CensusService object.
+  */
   private CensusService censusService;
 
+  /**
+  * Initialize CensusService object.
+  * @param service CensusService object
+  */
   @Autowired
-  public void setCensusService(CensusService censusService) { this.censusService = censusService; }
+  public void setCensusService(final CensusService service) {
+                  this.censusService = service;
+                }
 
-  @PostMapping(path="/add") 
-  public @ResponseBody ResponseEntity<Census> addNewCensusTract (@RequestParam String state
-      , @RequestParam String county, @RequestParam Integer population
-      , @RequestParam Integer populationmen, @RequestParam Long tractId
-      , @RequestParam Integer year) {
-    
-    Census c = new Census();
-    c.setState(state);
-    c.setCounty(county);
-    c.setPopulation(population);
-    c.setPopulationMen(populationmen);
-    c.setTractId(tractId);
-    c.setYear(year);
+  /**
+  * Add a new census record to the database.
+  * @param state State value
+  * @param county County value
+  * @param population Population value
+  * @param populationmen Population of men value
+  * @param tractId Tract ID
+  * @param year Year value
+  * @return JSON representation of data added
+  */
+  @PostMapping(path = "/add")
+  public @ResponseBody ResponseEntity<Census> addNewCensusTract(
+         @RequestParam final String state,
+         @RequestParam final String county,
+         @RequestParam final Integer population,
+         @RequestParam final Integer populationmen,
+         @RequestParam final Long tractId,
+         @RequestParam final Integer year) {
+
+          Census c = new Census();
+          c.setState(state);
+          c.setCounty(county);
+          c.setPopulation(population);
+          c.setPopulationMen(populationmen);
+          c.setTractId(tractId);
+          c.setYear(year);
     try {
         censusRepository.save(c);
-    } catch(DataIntegrityViolationException exception) {
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "Census Record Exists");
+    } catch (DataIntegrityViolationException exception) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT,
+                  "Census Record Exists");
     }
     return new ResponseEntity<Census>(c, HttpStatus.CREATED);
   }
 
-  @GetMapping(path="/all")
+  /**
+  * Return all the census data.
+  * @return JSON array with all the records
+  */
+  @GetMapping(path = "/all")
   public @ResponseBody Iterable<Census> getAllCensus() {
     return censusRepository.findAll();
   }
 
-  @GetMapping(path="/{id}")
-  public ResponseEntity<Census> getCensus(@PathVariable Long id) {
+  /**
+  * Return census record by Tract ID.
+  * @param id Tract ID
+  * @return Match census record object
+  */
+  @GetMapping(path = "/{id}")
+  public ResponseEntity<Census> getCensus(@PathVariable final Long id) {
     try {
-        return new ResponseEntity<Census>(censusService.findCensus(id), HttpStatus.OK);
+        return new ResponseEntity<Census>(censusService.findCensus(id),
+                   HttpStatus.OK);
     } catch (CensusNotFoundException exception) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Census Record Not Found");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                  "Census Record Not Found");
     }
   }
 
