@@ -1,5 +1,7 @@
 package com.ashcorp.censusdataoperations.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.ashcorp.censusdataoperations.entity.Census;
 import com.ashcorp.censusdataoperations.exception.CensusNotFoundException;
 import com.ashcorp.censusdataoperations.repository.CensusRepository;
@@ -20,6 +22,13 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 @RequestMapping(path = "/data/census") // path
 public class MainController {
+
+  /**
+  * Logger declaration.
+  */
+  private Logger logger
+        = LoggerFactory.getLogger(MainController.class);
+
   /**
   * CensusRepository object.
   */
@@ -68,7 +77,9 @@ public class MainController {
           c.setYear(year);
     try {
         censusRepository.save(c);
+        logger.info("census record " + tractId + " added");
     } catch (DataIntegrityViolationException exception) {
+        logger.error("failed to add census record " + tractId);
         throw new ResponseStatusException(HttpStatus.CONFLICT,
                   "Census Record Exists");
     }
@@ -95,6 +106,7 @@ public class MainController {
         return new ResponseEntity<Census>(censusService.findCensus(id),
                    HttpStatus.OK);
     } catch (CensusNotFoundException exception) {
+        logger.error("census record " + id + " not found");
         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                   "Census Record Not Found");
     }

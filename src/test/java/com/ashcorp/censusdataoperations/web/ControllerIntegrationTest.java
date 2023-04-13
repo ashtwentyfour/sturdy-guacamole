@@ -31,4 +31,13 @@ public class ControllerIntegrationTest {
                 .andDo(print()).andExpect(status().isOk())
                 .andExpect(jsonPath("$.state").value("NY"));
     }
+
+	/**
+    * Request should return a 404 Not Found.
+	*/
+    @Test
+    public void shouldReturnNotFound() throws Exception {
+        this.mockMvc.perform(get("/data/census/1001020101"))
+                .andDo(print()).andExpect(status().isNotFound());
+    }
 }
