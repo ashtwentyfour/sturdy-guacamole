@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: spring-census
+  name: spring-census
+  namespace: census
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: spring-census
+  template:
+    metadata:
+      labels:
+        app: spring-census
+    spec:
+      containers:
+      - image: ashbourne1990/spring-sample-restful-service:latest
+        name: census-service
+        imagePullPolicy: Always
+        env:
+        - name: MYSQL_HOST
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: host
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password
+        ports:
+        - containerPort: 8080
+        resources: {}
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 3
