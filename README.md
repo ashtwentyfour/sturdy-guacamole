@@ -1,4 +1,4 @@
-# Sample Spring Boot Service
+# Simple Spring REST API
 
 ## Build & Package
 
